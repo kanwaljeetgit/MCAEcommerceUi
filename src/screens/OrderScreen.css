@@ -1,0 +1,32 @@
+.orders{
+    padding: 20px;
+    margin: 15px;   
+}
+
+.orderContainer{
+    margin-top: 30px;
+    display: flex;
+}
+
+.orderDescription{
+    margin-left: 12px;
+    margin-top: 8px;
+}
+
+.orderContainerButton{
+    display: flex;
+    flex-direction: column;
+    margin-left: auto;
+}
+
+.orderButtons{
+    margin-top: 5px;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 500;
+    background-color: #FEBE10;
+    padding: 8px;
+}
