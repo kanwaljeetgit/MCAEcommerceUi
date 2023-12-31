@@ -2,9 +2,8 @@ import React from 'react'
 import './Cart.css'
 import Header from '../components/Header'
 import { useDispatch, useSelector } from 'react-redux'
-import { incrementQuantity, decrementQuantity } from '../redux/CartSlice';
+import { incrementQuantity, decrementQuantity, removeFromCart } from '../redux/CartSlice';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import { grey } from '@mui/material/colors';
 import LocalOfferRoundedIcon from '@mui/icons-material/LocalOfferRounded';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -22,6 +21,9 @@ function Cart() {
     };
     const decrementItemQuantity = (item) => {
         dispatch(decrementQuantity(item));
+    };
+    const removeItem = (item) => {
+        dispatch(removeFromCart(item));
     };
     const placeOrder = () =>{
         toast.success('Order Placed Successfully!', {
@@ -93,7 +95,7 @@ function Cart() {
                                             <div>{item.quantity}</div>
                                             <div onClick={() => incrementItemQuantity(item)} style={{ cursor: 'pointer' }}>+</div>
                                         </div>
-                                        <button className='cartRemoveButton'>Remove Item</button>
+                                        <button onClick={() => removeItem(item)} className='cartRemoveButton'>Remove Item</button>
                                         <h5 style={{ marginTop: 7, textAlign: 'center' }}>{item.price * item.quantity}</h5>
                                     </div>
                                 </div>

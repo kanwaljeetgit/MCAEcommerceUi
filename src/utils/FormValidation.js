@@ -1,7 +1,6 @@
 import { toast } from 'react-toastify';
 
-
-function isEmpty(fieldName, fieldValue) {
+function isEmpty(fieldValue) {
     return fieldValue ? false : true;
 };
 
@@ -18,5 +17,31 @@ function alertEmpty(fieldName) {
     });
 };
 
-export { isEmpty, alertEmpty };
+function alertError(message) {
+    toast.error(`${message}`, {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+    });
+};
+
+function alertSuccess(message) {
+    toast.error(`${message}`, {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+    });
+};
+
+export { isEmpty, alertEmpty, alertError, alertSuccess };
 //export default test;

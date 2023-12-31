@@ -27,10 +27,16 @@
 .headerBottom{
     color: white;
     background-color: #123456;
-    padding: 8px;
+    padding: 2px;
     height: 30px;
     display: flex;
     gap: 20px;
     font-weight: 600;
 
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
 }

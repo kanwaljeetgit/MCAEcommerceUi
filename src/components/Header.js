@@ -17,21 +17,21 @@ function Header() {
         <>
             <div className="header">
                 {/* Header logo */}
-                <div>
+                <div onClick={()=>navigate("/home")} title='Home Page' className='tooltip'>
                     <img style={{
                         width: 60,
                         height: 50,
-                        margin: 10
+                        margin: 10,
+                        cursor:'pointer'
                     }}
-                        className='logoImg' src={logo} alt='test' />
+                      className='logoImg' src={logo} alt='test' />
                 </div>
                 {/* Search Bar */}
                 <div className='headerInputContainer'>
                     <input className='headerInput' type='text' placeholder='Search Products' />
                     <SearchOutlinedIcon style={{
                         color: 'white',
-                        marginLeft: 4,
-                        marginTop: 2
+                        margin: 15,
                     }} />
                 </div>
 

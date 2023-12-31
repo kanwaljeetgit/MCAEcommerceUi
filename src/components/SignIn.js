@@ -1,40 +1,79 @@
-import React from "react";
+import React, { useEffect } from "react";
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import test, { isEmpty, alertEmpty } from "../utils/FormValidation.js";
-import { ToastContainer } from "react-toastify";
+import { isEmpty, alertEmpty, alertError } from "../utils/FormValidation.js";
+import { useNavigate } from "react-router-dom";
 
 function SignIn() {
-  const [state, setState] = React.useState({
-    email: "",
-    password: ""
+  const navigate = useNavigate()
+  const [userCred, setUserCred] = React.useState({
+    email:"",
+    password:""
   });
+
+
   const handleChange = evt => {
     const value = evt.target.value;
-    setState({
-      ...state,
+    setUserCred({
+      ...userCred,
       [evt.target.name]: value
     });
   };
 
+  const validateInputs = () => {
+    const { email, password } = userCred;
+    if (isEmpty(email)) {
+      alertEmpty('email');
+      return false;
+    }
+    if (isEmpty(password)) {
+      alertEmpty('password');
+      return false;
+    }
+    return true;
+  };
+
+  const getServerAuthResponse = async () => {
+    const response = await fetch('http://localhost:8080/auth/authenticate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userCred),
+    }).then(res => {
+      if (res.ok) {
+        return res.json();
+      } else {
+        throw new Error(`Error with status ${res.status}`);
+      }
+    }).catch(error => {
+      console.error('Error:', error.message);
+      return error.message;
+    });
+    return response;
+  };
+
+  const signIn = async () => {
+    const { email, password } = userCred;
+    let res = await getServerAuthResponse();
+    if(res.token){
+      localStorage.setItem('token',res.token);
+      navigate('/home');
+    }else{
+      alertError(res);
+    }
+  };
+
   const handleOnSubmit = evt => {
     evt.preventDefault();
-
-    const { email, password } = state;
-    if (isEmpty('email', email)) {
-      alertEmpty('email');
-      return;
+    if(!validateInputs()){
+      return
     }
-    if (isEmpty('password', password)) {
-      alertEmpty('password');
-      return;
-    }
-    //alert(`You are login with email: ${email} and password: ${password}`);
-
-    for (const key in state) {
-      setState({
-        ...state,
+    signIn()
+    for (const key in userCred) {
+      setUserCred({
+        ...userCred,
         [key]: ""
       });
     }
@@ -57,18 +96,22 @@ function SignIn() {
         </div>
         <span>or use your account</span>
         <input
-          type="email"
+          type="text"
           placeholder="Email"
           name="email"
-          value={state.email}
+          id="email"
+          value={setUserCred.email}
           onChange={handleChange}
+          autoComplete="off"
         />
         <input
           type="password"
           name="password"
+          id="password"
           placeholder="Password"
-          value={state.password}
+          value={setUserCred.password}
           onChange={handleChange}
+          autoComplete="off"
         />
         <a href="#">Forgot your password?</a>
         <button>Sign In</button>

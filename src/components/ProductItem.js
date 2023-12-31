@@ -2,15 +2,21 @@ import React from 'react'
 import './ProductItem.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { addToCart,removeFromCart } from '../redux/CartSlice';
+import { useNavigate } from 'react-router-dom';
 
 function ProductItem({ item }) {
     const cart = useSelector(state => state.cart.cart);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const addItemToCart = (item) => {
         dispatch(addToCart(item));
     };
     const removeItemFromCart = (item) => {
         dispatch(removeFromCart(item));
+    };
+    const navigateToCart = (item) =>{
+        dispatch(addToCart(item));
+        navigate("/cart");
     };
     
     return (
@@ -28,7 +34,7 @@ function ProductItem({ item }) {
             <div style={{ fontWeight: 450 }}>{item.description.length > 60 ? item.description.substr(0, 60) : item.description}</div>
 
             {/* product price */}
-            <div style={{ fontWeight: 450 }}>{item.price}</div>
+            <div style={{ fontWeight: 750 }}>{item.price}</div>
 
             {/* product add cart button */}
             {cart.some((x) =>  x.id === item.id) ? (
@@ -38,7 +44,7 @@ function ProductItem({ item }) {
             )}
 
             {/* product buy now button */}
-            <button style={{ backgroundColor: '#FFD700' }} className='productItemButton'>Buy Now</button>
+            <button onClick={() => navigateToCart(item)} style={{ backgroundColor: '#FFD700' }} className='productItemButton'>Buy Now</button>
 
         </div>
     )

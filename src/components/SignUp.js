@@ -2,34 +2,75 @@ import {useState} from 'react'
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import {isEmpty} from '../utils/FormValidation.js'
-
+import { alertEmpty, alertError, alertSuccess, isEmpty } from '../utils/FormValidation';
+import { useNavigate } from "react-router-dom";
 
 function SignUp() {
-  const [state, setState] = useState({
-    name: "",
+  const navigate = useNavigate()
+  const [regData, setRegData] = useState({
+    firstName: "",
+    lastName: "",
     email: "",
     password: ""
   });
   const handleChange = evt => {
     const value = evt.target.value;
-    setState({
-      ...state,
+    setRegData({
+      ...regData,
       [evt.target.name]: value
     });
   };
 
+  const getServerRegisterResponse = async () => {
+    const response = await fetch('http://localhost:8080/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(regData),
+    }).then(res => {
+      if (res.ok) {
+        return res.json();
+      } else {
+        throw new Error(`Error with status ${res.status}`);
+      }
+    }).catch(error => {
+      console.error('Error:', error.message);
+      return error.message;
+    });
+    return response;
+  };
+
+  const signUp = async () => {
+    let res = await getServerRegisterResponse();
+    if(res.token){
+      alertSuccess("Sign Up Successfully!!!");
+      navigate('/');
+      document.getElementById('signIn').click();
+    }else{
+      alertError(res);
+    }
+  };
+
+  const validateInputs = () => {
+    for (const key in regData) {
+      if (isEmpty(regData[key])) {
+        alertEmpty(key);
+        return false;
+      }
+    }
+    return true;
+  };
+
   const handleOnSubmit = evt => {
     evt.preventDefault();
-
-    const { name, email, password } = state;
-    alert(
-      `You are sign up with name: ${name} email: ${email} and password: ${password}`
-    );
-
-    for (const key in state) {
-      setState({
-        ...state,
+    if(!validateInputs()){
+      return;
+    }
+    signUp();
+    for (const key in regData) {
+      setRegData({
+        ...regData,
         [key]: ""
       });
     }
@@ -53,22 +94,29 @@ function SignUp() {
         <span>or use your email for registration</span>
         <input
           type="text"
-          name="name"
-          value={state.name}
+          name="firstName"
+          value={regData.firstName}
           onChange={handleChange}
-          placeholder="Name"
+          placeholder="First Name"
         />
         <input
-          type="email"
+          type="text"
+          name="lastName"
+          value={regData.lastName}
+          onChange={handleChange}
+          placeholder="Last Name"
+        />
+        <input
+          type="text"
           name="email"
-          value={state.email}
+          value={regData.email}
           onChange={handleChange}
           placeholder="Email"
         />
         <input
           type="password"
           name="password"
-          value={state.password}
+          value={regData.password}
           onChange={handleChange}
           placeholder="Password"
         />
