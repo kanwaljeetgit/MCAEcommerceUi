@@ -37,7 +37,7 @@ function ProductItem({ item }) {
             <div style={{ fontWeight: 750 }}>{item.price}</div>
 
             {/* product add cart button */}
-            {cart.some((x) =>  x.id === item.id) ? (
+            {cart && cart.some((x) =>  x.id === item.id) ? (
                 <button className='productItemButton' onClick={() => removeItemFromCart(item)}>Remove From Cart</button>
             ) : (
                 <button className='productItemButton' onClick={() => addItemToCart(item)}>Add to Cart</button>

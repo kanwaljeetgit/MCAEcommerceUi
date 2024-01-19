@@ -6,13 +6,31 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
-function Header() {
+function Header({ onSearch, searchEnable=false }) {
+
+    const [searchInput, setSearchInput] = useState('');
+
+    const handleChange = (e) => {
+      setSearchInput(e.target.value);
+      if(searchEnable && (e.target.value.length==0 || e.target.value.length>=3)){
+        onSearch(e.target.value);
+      }
+    };
+  
+    const handleSearch = () => {
+        if(searchEnable){
+           onSearch(searchInput);
+        }
+    };
+
     const cart = useSelector(state => state.cart.cart);
     const navigate = useNavigate();
     const navigateToCart = () =>{
         navigate("/cart");
     };
+
     return (
         <>
             <div className="header">
@@ -28,11 +46,12 @@ function Header() {
                 </div>
                 {/* Search Bar */}
                 <div className='headerInputContainer'>
-                    <input className='headerInput' type='text' placeholder='Search Products' />
-                    <SearchOutlinedIcon style={{
+                    <input className='headerInput' type='text' placeholder='Search Products'  value={searchInput}
+                       onChange={handleChange} />
+                    <button style= {{backgroundColor:'#2c4867',padding:1,border:0,borderRadius:5}} onClick={handleSearch}><SearchOutlinedIcon style={{
                         color: 'white',
                         margin: 15,
-                    }} />
+                    }} /></button>
                 </div>
 
                 <div>
@@ -40,7 +59,7 @@ function Header() {
                     <div className='headerText'>Accounts & Lists</div>
                 </div>
 
-                <div>
+                <div onClick={ () =>  navigate('/orders')} style={{ cursor:'pointer'}}>
                     <div className='headerText'>Return</div>
                     <div className='headerText'>& Orders</div>
                 </div>

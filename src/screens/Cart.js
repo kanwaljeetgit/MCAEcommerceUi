@@ -8,13 +8,14 @@ import LocalOfferRoundedIcon from '@mui/icons-material/LocalOfferRounded';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
+import apiService from '../utils/ApiService';
 
 function Cart() {
     const cart = useSelector(state => state.cart.cart);
     const navigate = useNavigate()
     const orders = [...cart]
     const total = cart.map((item) => item.price * item.quantity).reduce((curr, prev) => curr + prev, 0);
-    const charges = 30;
+    const charges = 20;
     const dispatch = useDispatch()
     const incrementItemQuantity = (item) => {
         dispatch(incrementQuantity(item));
@@ -25,7 +26,22 @@ function Cart() {
     const removeItem = (item) => {
         dispatch(removeFromCart(item));
     };
-    const placeOrder = () =>{
+    const placeOrder = async () => {
+        let orderObj = { items: [] };
+        cart.map(item => {
+            orderObj.items.push({ product: item, quantity: item.quantity, amount: item.amount })
+        });
+        const response = await apiService.post('/order',JSON.stringify(orderObj)
+        ).then(res => {
+            if (res.status==200) {
+                return res.data;
+            } else {
+                throw new Error(`Error with status ${res.status}`);
+            }
+        }).catch(error => {
+            console.error('Error:', error.message);
+            return error.message;
+        });
         toast.success('Order Placed Successfully!', {
             position: "top-center",
             autoClose: 5000,
@@ -36,15 +52,15 @@ function Cart() {
             progress: undefined,
             theme: "dark",
         });
-        
-        setTimeout(()=>{
-            navigate('/orders',{
-                state:{
-                    orders:orders,
-                    totalPrice: total+charges
+
+        setTimeout(() => {
+            navigate('/orders', {
+                state: {
+                    orders: orders,
+                    totalPrice: total + charges
                 }
             })
-        },3500)
+        }, 3500)
 
     };
     return (
@@ -134,7 +150,7 @@ function Cart() {
                             <div className='rightCartCheckoutConatiner'>
                                 <div className='rightCartCheckout'>
                                     <div>Total Price</div>
-                                    <div>{total}</div>
+                                    <div>{total.toFixed(2)}</div>
                                 </div>
                                 <div className='rightCartCheckout'>
                                     <div>Discount</div>

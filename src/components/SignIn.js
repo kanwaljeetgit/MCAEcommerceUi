@@ -1,17 +1,21 @@
-import React, { useEffect } from "react";
+import React, { useCallback } from "react";
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import { isEmpty, alertEmpty, alertError } from "../utils/FormValidation.js";
 import { useNavigate } from "react-router-dom";
+import apiService from '../utils/ApiService';
+import { loadCart, loadCartFromServer } from "../redux/CartSlice.js";
+import { useDispatch } from "react-redux";
 
 function SignIn() {
   const navigate = useNavigate()
   const [userCred, setUserCred] = React.useState({
-    email:"",
-    password:""
+    email: "",
+    password: ""
   });
 
+  const dispatch = useDispatch();
 
   const handleChange = evt => {
     const value = evt.target.value;
@@ -35,15 +39,10 @@ function SignIn() {
   };
 
   const getServerAuthResponse = async () => {
-    const response = await fetch('http://localhost:8080/auth/authenticate', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userCred),
-    }).then(res => {
-      if (res.ok) {
-        return res.json();
+    const response = await apiService.post('/auth/authenticate', JSON.stringify(userCred)
+    ).then(res => {
+      if (res.status == 200) {
+        return res.data;
       } else {
         throw new Error(`Error with status ${res.status}`);
       }
@@ -54,20 +53,33 @@ function SignIn() {
     return response;
   };
 
+  const fetchCartData = async () =>{
+    const response = await apiService.get('/cart').catch((error) => {
+      console.error('No Data Found:', error);
+      return undefined;
+    });
+    if(response){
+      dispatch(loadCart(response.data.cartData));
+    }
+    return Promise.resolve(response);
+  }
+
   const signIn = async () => {
     const { email, password } = userCred;
     let res = await getServerAuthResponse();
-    if(res.token){
-      localStorage.setItem('token',res.token);
-      navigate('/home');
-    }else{
+    if (res.token) {
+      sessionStorage.setItem('token', res.token);
+      fetchCartData().then((res)=>{
+        navigate('/home');
+      });
+    } else {
       alertError(res);
     }
   };
 
   const handleOnSubmit = evt => {
     evt.preventDefault();
-    if(!validateInputs()){
+    if (!validateInputs()) {
       return
     }
     signIn()

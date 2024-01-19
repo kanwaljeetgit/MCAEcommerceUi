@@ -1,38 +1,49 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import './Body.css';
 import ProductItem from './ProductItem';
 import { useNavigate } from 'react-router-dom';
+import apiService from '../utils/ApiService';
+import productNotFound from '../logo/productNotFound.jpg'
 
 
-function Body() {
+function Body({ searchQuery }) {
+    console.log('Search Query:', searchQuery);
     const [products, setProducts] = useState([]);
-    const cart = useSelector(state => state.cart.cart);
     const navigate = useNavigate();
-    console.log(cart);
+    const filteredProducts = searchQuery ? products.filter((product) =>
+             product.description.toLowerCase().includes(searchQuery.toLowerCase())
+             || product.title.toLowerCase().includes(searchQuery.toLowerCase())
+        ) : products;
 
     useEffect(() => {
-        if(!localStorage.getItem('token')){
+        if (!sessionStorage.getItem('token')) {
             navigate('/');
         }
         const fetchProducts = async () => {
-            await fetch("http://localhost:8080/products",{
-                method: 'GET',
-                headers: {
-                    "Authorization" : "Bearer "+localStorage.getItem('token')
-                 }})
-                .then(res => res.json())
+            await apiService.get("/products")
+                .then(res => res.data)
                 .then(data => setProducts(data));
         };
-        fetchProducts();
-    }, []);
-    
+        if (products && products.length === 0) {
+            fetchProducts();
+        }
+    }, [searchQuery]);
+
+    const getEmptyItem = () =>{
+        return <div><img src={productNotFound}></img></div>
+    }
+
     return (
         <div className='body'>
             <div className='bodyItems'>
-               {products.map((item,index) => (
-                  <ProductItem item={item} key={item.id}/>
-               ))}
+                {
+                filteredProducts.length===0 
+                  ?  getEmptyItem() 
+                  :  filteredProducts.map((item, index) => (
+                       <ProductItem item={item} key={item.id} />
+                      ))
+                }
             </div>
         </div>
     )

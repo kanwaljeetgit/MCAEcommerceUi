@@ -1,18 +1,26 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import './Home.css'
 import Header from '../components/Header'
 import Body from '../components/Body'
 import CarouselComp from '../components/CarouselComp'
+import { useState } from 'react'
 
 function Home() {
+
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
+
   return (
     <div className='home'>
         {/* Header */}
-        <Header/>
+        <Header onSearch={handleSearch} searchEnable={true} />
         { /* carousel banner */}
-        <CarouselComp/>
+        {searchQuery.length==0?<CarouselComp/>:''}
         {/* Body */}
-        <Body/>
+        <Body searchQuery={searchQuery}/>
     </div>
   )
 }

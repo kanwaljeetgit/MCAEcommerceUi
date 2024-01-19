@@ -4,6 +4,8 @@ import GoogleIcon from '@mui/icons-material/Google';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import { alertEmpty, alertError, alertSuccess, isEmpty } from '../utils/FormValidation';
 import { useNavigate } from "react-router-dom";
+import apiService from '../utils/ApiService';
+
 
 function SignUp() {
   const navigate = useNavigate()
@@ -22,15 +24,10 @@ function SignUp() {
   };
 
   const getServerRegisterResponse = async () => {
-    const response = await fetch('http://localhost:8080/auth/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(regData),
-    }).then(res => {
-      if (res.ok) {
-        return res.json();
+    const response = await apiService.post('/auth/register',JSON.stringify(regData)
+    ).then(res => {
+      if (res.status==200) {
+        return res.data;
       } else {
         throw new Error(`Error with status ${res.status}`);
       }
