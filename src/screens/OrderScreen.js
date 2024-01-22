@@ -3,10 +3,13 @@ import './OrderScreen.css'
 import apiService from '../utils/ApiService';
 import Header from '../components/Header';
 import { defaultDateFormatter } from '../utils/DateFormatter';
+import { alertError, alertSuccess } from '../utils/FormValidation';
 
 function OrderScreen() {
 
     const [orders, setOrders] = useState([]);
+
+    const [reload, setReload] = useState(false);
 
     const [order, setOrder] = useState({});
 
@@ -22,10 +25,23 @@ function OrderScreen() {
             }
         };
         fetchData();
-    }, []);
+        setReload(false);
+    },[reload]);
 
     const reset = () => {
         setOrderDetails(false);
+    }
+
+    const statusUpdate = (id,status) => {
+        apiService.patch(`/order/update/${id}/status/${status}`)
+        .then(response => {
+            if(response.status===200){
+               alertSuccess(`Order status ${status} updated successfully for id ${id}`);
+               setReload(true);
+            }else{
+               alertError(`${response.statusText}`); 
+            }
+        })
     }
 
     const getStatus = (status) => {
@@ -38,6 +54,15 @@ function OrderScreen() {
                 return <button style={{background:'#ff3333'}}>Rejected</button>
             default:
                 break;
+        }
+    };
+
+    const getStatusActions = (id,status) => {
+        switch (status) {
+            case 'PENDING':
+                return <button onClick={()=>statusUpdate(id,'REJECTED')} style={{background:'#ff3333'}}>Reject</button>
+            default:
+                return <button style={{background:'grey'}}>No Action</button>;
         }
     };
 
@@ -84,6 +109,7 @@ function OrderScreen() {
                     <th> Order Date </th>
                     <th> Item Count </th>
                     <th> Order Status </th>
+                    <th> Order Actions</th>
                     <th> View </th>
                 </tr>
             </thead>
@@ -96,6 +122,7 @@ function OrderScreen() {
                         <td>{defaultDateFormatter(order.createdTime)}</td>
                         <td> {order.totalItemCount} </td>
                         <td>{getStatus(order.status)}</td>
+                        <td>{getStatusActions(order.id,order.status)}</td>
                         <td><button onClick={() => showOrderDetails(order)} style={{ background: '#FEBE10' }}>View Details</button></td>
                     </tr>
                 ))}

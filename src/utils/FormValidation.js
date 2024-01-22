@@ -31,7 +31,7 @@ function alertError(message) {
 };
 
 function alertSuccess(message) {
-    toast.error(`${message}`, {
+    toast.success(`${message}`, {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: false,

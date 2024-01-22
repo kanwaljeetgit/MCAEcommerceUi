@@ -69,6 +69,7 @@ function SignIn() {
     let res = await getServerAuthResponse();
     if (res.token) {
       sessionStorage.setItem('token', res.token);
+      sessionStorage.setItem('expireAt', res.expireAt);
       fetchCartData().then((res)=>{
         navigate('/home');
       });
