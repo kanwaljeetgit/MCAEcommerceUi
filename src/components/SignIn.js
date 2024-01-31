@@ -5,7 +5,7 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import { isEmpty, alertEmpty, alertError } from "../utils/FormValidation.js";
 import { useNavigate } from "react-router-dom";
 import apiService from '../utils/ApiService';
-import { loadCart, loadCartFromServer } from "../redux/CartSlice.js";
+import { cleanCart, loadCart, loadCartFromServer } from "../redux/CartSlice.js";
 import { useDispatch } from "react-redux";
 
 function SignIn() {
@@ -47,8 +47,13 @@ function SignIn() {
         throw new Error(`Error with status ${res.status}`);
       }
     }).catch(error => {
-      console.error('Error:', error.message);
-      return error.message;
+      if(error.response && error.response.data){
+        console.error('Error:', error.response.data.message);
+        return error.response.data.message;
+      }else{
+        console.error('Error:', error);
+        return error;
+      }
     });
     return response;
   };
@@ -60,6 +65,8 @@ function SignIn() {
     });
     if(response){
       dispatch(loadCart(response.data.cartData));
+    }else{
+      dispatch(cleanCart());
     }
     return Promise.resolve(response);
   }
@@ -70,6 +77,7 @@ function SignIn() {
     if (res.token) {
       sessionStorage.setItem('token', res.token);
       sessionStorage.setItem('expireAt', res.expireAt);
+      sessionStorage.setItem('userName', email);
       fetchCartData().then((res)=>{
         navigate('/home');
       });

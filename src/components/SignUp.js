@@ -29,11 +29,11 @@ function SignUp() {
       if (res.status==200) {
         return res.data;
       } else {
-        throw new Error(`Error with status ${res.status}`);
+        throw new Error(`Error ${res.status}`);
       }
     }).catch(error => {
-      console.error('Error:', error.message);
-      return error.message;
+      console.error('Error:', error.response.data.message);
+      return error.response.data.message;
     });
     return response;
   };

@@ -18,7 +18,7 @@ ApiService.interceptors.request.use(config => {
     console.log('token in axios ' + sessionStorage.getItem('token'));
     if (sessionStorage.getItem('token')) {
         if (!config.url.startsWith('/auth/') && isTokenExpired(sessionStorage.getItem('expireAt'))) {
-            alertError('your login session is expired!!!')
+            alertError('your login session is expired!!!');
             setTimeout(() => window.location.href = 'http://localhost:3000', 2000);
 
         }

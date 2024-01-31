@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { ToastContainer } from 'react-toastify';
+import { alertError } from '../utils/FormValidation';
 
 function Header({ onSearch, searchEnable = false }) {
 
@@ -31,6 +32,15 @@ function Header({ onSearch, searchEnable = false }) {
     const navigateToCart = () => {
         navigate("/cart");
     };
+
+    const logout = () => {
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('expireAt');
+        sessionStorage.removeItem('userName');
+        sessionStorage.removeItem('localCart');
+        alertError('you have been logged out!!!')
+        setTimeout(() => navigate("/"), 2000);
+    }
 
     return (
         <>
@@ -68,8 +78,7 @@ function Header({ onSearch, searchEnable = false }) {
                 </div>
 
                 <div>
-                    <div className='headerText'>Kanwaljeet</div>
-                    <div className='headerText'>Accounts & Lists</div>
+                    <div onClick={()=>logout()} style={{cursor:'pointer'}} className='headerText'>{sessionStorage.getItem('userName')} <br/>Logout</div>
                 </div>
 
                 <div onClick={() => navigate('/orders')} style={{ cursor: 'pointer' }}>

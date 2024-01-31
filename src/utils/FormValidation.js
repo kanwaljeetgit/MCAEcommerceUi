@@ -43,5 +43,12 @@ function alertSuccess(message) {
     });
 };
 
-export { isEmpty, alertEmpty, alertError, alertSuccess };
+function checkUserValidation(){
+    if(!sessionStorage.getItem('expireAt')){
+        alertError('your login session is expired!!!');
+        setTimeout(() => window.location.href = window.location.origin+"/", 2000);
+     }
+}
+
+export { isEmpty, alertEmpty, alertError, alertSuccess, checkUserValidation };
 //export default test;

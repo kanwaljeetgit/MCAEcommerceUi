@@ -9,6 +9,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import apiService from '../utils/ApiService';
+import { useEffect } from 'react';
+import { alertError, checkUserValidation } from '../utils/FormValidation';
 
 function Cart() {
     const cart = useSelector(state => state.cart.cart);
@@ -39,8 +41,13 @@ function Cart() {
                 throw new Error(`Error with status ${res.status}`);
             }
         }).catch(error => {
-            console.error('Error:', error.message);
-            return error.message;
+            if(error.response && error.response.data){
+              console.error('Error:', error.response.data.message);
+              return error.response.data.message;
+            }else{
+              console.error('Error:', error);
+              return error;
+            }
         });
         toast.success('Order Placed Successfully!', {
             position: "top-center",
@@ -61,8 +68,12 @@ function Cart() {
                 }
             })
         }, 3500)
-
     };
+
+    useEffect(() => {
+        checkUserValidation();
+    },[]);
+
     return (
         <>
             <Header />
